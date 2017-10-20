@@ -7,12 +7,13 @@ import re
 import shutil
 import urllib
 
+
 #cmd = 'export ALSADEV=plughw:2; julius -h gmmdefs -w class.txt -wsil noise noise noise -input alsa -lv 900 -record ./save'
 #cmd = 'export ALSADEV=plughw:2; julius -h gmmdefs -w class.txt -input alsa -lv 900 -record ./save'
 cmd = 'julius -h gmmdefs -w class.txt -input alsa -record ./save'
 
 def LEDon():
-        GPIO.output(11, True)      
+        GPIO.output(11, True)        
 
 def LEDoff():
         GPIO.output(11, False)        
@@ -47,7 +48,7 @@ if __name__ == '__main__':
                         print "result: " + line,
                         if re.search(r"laugh", line):
                                 LEDon()
-                                urllib.urlopen('http://192.168.152.111:8000/httpserver/laugh/') 
+                                urllib.urlopen('http://192.168.152.111:8000/httpserver/laugh/')
                                 src = open("./save/%s" % filename, "r")
                                 dst = open("./laugh/%s" % filename, "w")
                                 shutil.copyfileobj(src, dst)
@@ -55,6 +56,7 @@ if __name__ == '__main__':
                         else:
                                 threading.Thread(target=LEDchika).start()
                                 urllib.urlopen('http://192.168.152.111:8000/httpserver/voice')
+
                                 
                 if not line and p.poll() is not None:
                         break
