@@ -5,8 +5,6 @@ import time
 import threading
 import re
 import shutil
-import urllib
-
 
 #cmd = 'export ALSADEV=plughw:2; julius -h gmmdefs -w class.txt -wsil noise noise noise -input alsa -lv 900 -record ./save'
 #cmd = 'export ALSADEV=plughw:2; julius -h gmmdefs -w class.txt -input alsa -lv 900 -record ./save'
@@ -48,15 +46,12 @@ if __name__ == '__main__':
                         print "result: " + line,
                         if re.search(r"laugh", line):
                                 LEDon()
-                                urllib.urlopen('http://192.168.152.111:8000/httpserver/laugh/')
                                 src = open("./save/%s" % filename, "r")
                                 dst = open("./laugh/%s" % filename, "w")
                                 shutil.copyfileobj(src, dst)
                                 threading.Timer(3, LEDoff).start()
                         else:
                                 threading.Thread(target=LEDchika).start()
-                                urllib.urlopen('http://192.168.152.111:8000/httpserver/voice')
-
                                 
                 if not line and p.poll() is not None:
                         break
