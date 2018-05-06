@@ -11,10 +11,11 @@ import socket
 
 hostname = socket.gethostname()
 servername = "aml195035.local:8000"
+actime = 0
 
 #cmd = 'export ALSADEV=plughw:2; julius -h gmmdefs -w class.txt -wsil noise noise noise -input alsa -lv 900 -record ./save'
 #cmd = 'export ALSADEV=plughw:2; julius -h gmmdefs -w class.txt -input alsa -lv 900 -record ./save'
-cmd = 'julius -h gmmdefs -w class.txt -input alsa -record ./save'
+cmd = 'julius -h gmmdefs -w class.txt -input alsa -lv 6000 -record ./save'
 
 def LEDon():
         GPIO.output(11, True) 
@@ -35,8 +36,7 @@ def server(so):
 	src = open("./save/%s" % filename, "r")
 	dst = open("./" + so + "/%s" % filename, "w")
 	shutil.copyfileobj(src, dst)
-	print ("koko")
-	urllib.urlopen("http://" + servername + "/httpserver/" + so + "/" + hostname + "/" + str(rectime) + "/")
+	urllib.urlopen("http://" + servername + "/httpserver/" + so + "/" + hostname + "/" + str(actime) + "/")
 
 if __name__ == '__main__':
         GPIO.setmode(GPIO.BOARD)
@@ -48,13 +48,20 @@ if __name__ == '__main__':
                              stderr=subprocess.STDOUT)
         while True:
                 line = p.stdout.readline()
-                print ("cmd: " + line)
+                #print ("cmd: " + line)
         		
                 if re.search(r"recorded to", line):
                         filenameSearch = re.search("(\d\d\d\d\.\d\d\d\d\.\d\d\d\d\d\d\.wav)", line)
-                        rectime = datetime.datetime.now().strftime("%Y%m%d%H%M%S.") + "%04d" %(datetime.datetime.now().microsecond // 1000)
+                        stoptime = datetime.datetime.now().strftime("%H%M%S.") + "%04d" %(datetime.datetime.now().microsecond // 1000)
+                        rectime = re.search("\d\d\d\d\d\d", line)
+                        recedtime = rectime.group()
+                        actime = float(stoptime) - float(recedtime)
+                        #print ("stop" + stoptime)
+                        #print ("go" + recedtime)
+                        #print ("result" + str(actime))
+                        
                         filename = filenameSearch.group(1)
-                    	print ("file: " + filename)
+                    	#print ("file: " + filename)
 
                 if re.search(r"sentence1:", line):
                         print ("result: " + line)
